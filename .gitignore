@@ -1,0 +1,10 @@
+.vscode/
+build/
+dist/
+api/configuration/secrets/*
+node_modules/
+coverage/
+api/node_modules/
+yarn-error.log
+test-report.xml
+api/yarn-error.log
