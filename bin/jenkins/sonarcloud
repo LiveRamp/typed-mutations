@@ -1,7 +1,7 @@
 #!/bin/bash
 BASE_ARGS=" \
 -Dsonar.login=${SONAR_TOKEN} \
--Dsonar.projectBaseDir=/app/api \
+-Dsonar.projectBaseDir=/app/ \
 -Dsonar.userHome=/app/.sonar \
 "
 
@@ -24,7 +24,6 @@ else
   ARGS="$BASE_ARGS $PR_ARGS"
 fi
 
-mv sonar-project.properties api/
 # Run the SonarCloud analysis inside of docker
 docker run \
   --user="0:0" \
