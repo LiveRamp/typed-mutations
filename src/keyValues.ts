@@ -1,4 +1,5 @@
 import { Collection } from "./collection";
+import { KeyValuesAlreadyDrainedError } from "./errors"
 
 /**
  * This type exists to determine the object structure for a given KeyValues. The point here is to have no type be 
@@ -136,20 +137,28 @@ export class KeyValues<KeyType, ValueType> {
   toObject(): { [i: string]: KeyValuesAsObject<ValueType> } {
     let res: { [i: string]: KeyValuesAsObject<ValueType> } = {};
 
-    this.data.toArray().forEach((e) => {
-      const [key, value] = e;
-      if (value instanceof KeyValues) {
-        res["" + key] = value.toObject() as KeyValuesAsObject<ValueType>;
-      } else if (value instanceof Collection) {
-        res["" + key] = value.toArray() as KeyValuesAsObject<ValueType>;
-      } else if (typeof value == "string" || typeof value == "number" || value instanceof Array) {
-        res["" + key] = value as KeyValuesAsObject<ValueType>;
-      } else {
-        res["" + key] = this._toObject(value) as KeyValuesAsObject<ValueType>;
-      }
-    });
+    try {
+      this.data.toArray().forEach((e) => {
+        const [key, value] = e;
+        if (value instanceof KeyValues) {
+          res["" + key] = value.toObject() as KeyValuesAsObject<ValueType>;
+        } else if (value instanceof Collection) {
+          res["" + key] = value.toArray() as KeyValuesAsObject<ValueType>;
+        } else if (typeof value == "string" || typeof value == "number" || value instanceof Array) {
+          res["" + key] = value as KeyValuesAsObject<ValueType>;
+        } else {
+          res["" + key] = this._toObject(value) as KeyValuesAsObject<ValueType>;
+        }
+      });
 
-    return res;
+      return res;
+    } catch (e) {
+      if (e.__kind == "CollectionAlreadyDrainedError") {
+        throw new KeyValuesAlreadyDrainedError()
+      } else {
+        throw e
+      }
+    }
   }
 
   /**

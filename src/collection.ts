@@ -1,5 +1,8 @@
+import { CollectionAlreadyDrainedError } from "./errors"
+
 export class Collection<T> implements Collection<T> {
   private data: Generator<T, void, unknown>;
+  private drained = false;
 
   constructor(data: Generator<T, void, unknown>) {
     this.data = data;
@@ -30,14 +33,18 @@ export class Collection<T> implements Collection<T> {
    * @param arr 
    */
   toArray(): T[] {
-    let result: T[] = [];
-    let v = this.data.next();
-    while (!v.done) {
-      result.push(v.value);
-      v = this.data.next();
+    if (!this.drained) {
+      let result: T[] = [];
+      let v = this.data.next();
+      while (!v.done) {
+        result.push(v.value);
+        v = this.data.next();
+      }
+      this.drained = true;
+      return result;
+    } else {
+      throw new CollectionAlreadyDrainedError()
     }
-
-    return result;
   }
 
   /**

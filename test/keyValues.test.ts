@@ -2,6 +2,7 @@
 
 import { KeyValues } from "../src/keyValues"
 import { Collection } from "../src/collection"
+import { CollectionAlreadyDrainedError } from "../src/errors"
 
 describe("KeyValues", () => {
   describe("constructors", () => {
@@ -234,5 +235,19 @@ describe("KeyValues", () => {
         types: [3, 4, 5]
       }
     ])
+  })
+
+  it("errors if you try and call toObject more than once on it", () => {
+    let sut = KeyValues.fromObject({});
+
+    sut.toObject();
+
+    expect.assertions(1);
+
+    try {
+      sut.toObject()
+    } catch (e) {
+      expect(e.__kind).toEqual("KeyValuesAlreadyDrainedError")
+    }
   })
 })
