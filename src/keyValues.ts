@@ -49,6 +49,7 @@ export class KeyValues<KeyType, ValueType> {
       Collection.of(o).map<[number, T]>((e: T) => [indexer(), e])
     );
   }
+
   /**
    * Perform operations on ValueType, potentially changing ValueType in the process. 
    * 
@@ -131,7 +132,6 @@ export class KeyValues<KeyType, ValueType> {
 
   /**
    * Returns the typed object corresponding to this KeyValues instance. 
-   * 
    */
   toObject(): { [i: string]: KeyValuesAsObject<ValueType> } {
     let res: { [i: string]: KeyValuesAsObject<ValueType> } = {};

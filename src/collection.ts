@@ -1,10 +1,3 @@
-export interface Collection<T> {
-  toArray(): T[];
-  map<U>(f: (e: T) => U): Collection<U>;
-  flatMap<U>(f: (e: T) => U[]): Collection<U>;
-  filter(f: (e: T) => boolean): Collection<T>;
-}
-
 export class Collection<T> implements Collection<T> {
   private data: Generator<T, void, unknown>;
 
@@ -12,6 +5,10 @@ export class Collection<T> implements Collection<T> {
     this.data = data;
   }
 
+  /**
+   * Constructs a Collection given an array
+   * @param arr 
+   */
   static of<T>(arr: T[]): Collection<T> {
     return new Collection(
       (function* gen() {
@@ -22,8 +19,16 @@ export class Collection<T> implements Collection<T> {
     );
   }
 
+  /**
+   * Constructs a Collection given an array
+   * @param arr 
+   */
   static fromArray<T>(arr: T[]): Collection<T> { return Collection.of(arr) }
 
+  /**
+   * Constructs an array from itself
+   * @param arr 
+   */
   toArray(): T[] {
     let result: T[] = [];
     let v = this.data.next();
@@ -35,6 +40,11 @@ export class Collection<T> implements Collection<T> {
     return result;
   }
 
+  /**
+   * Used to "expand" the size of the array if f returns more than one element, or "contract" the array if f returns an empty array.
+   * 
+   * @param f 
+   */
   flatMap<U>(f: (e: T) => U[]): Collection<U> {
     const self = this;
     return new Collection<U>(
@@ -48,10 +58,19 @@ export class Collection<T> implements Collection<T> {
     );
   }
 
+  /**
+   * Change the values based on the passed in function, f
+   * @param f 
+   */
   map<U>(f: (e: T) => U): Collection<U> {
     return this.flatMap((e) => [f(e)]);
   }
 
+  /**
+   * Remove all values for which f(v) does not return true
+   * 
+   * @param f 
+   */
   filter(f: (e: T) => boolean): Collection<T> {
     return this.flatMap((e) => {
       if (f(e)) {
