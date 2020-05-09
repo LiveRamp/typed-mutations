@@ -32,11 +32,11 @@ export class KeyValues<KeyType, ValueType> {
 
   static fromObject<T>(
     o: T
-  ): KeyValues<string, T[keyof T]> {
+  ): KeyValues<keyof T, T[keyof T]> {
     return new KeyValues(
       Collection.of(
-        Object.keys(o).map((key: string): [string, T[keyof T]] => [
-          key,
+        Object.keys(o).map((key: string): [keyof T, T[keyof T]] => [
+          key as keyof T,
           o[key as keyof T]! as T[keyof T],
         ])
       )
@@ -91,7 +91,6 @@ export class KeyValues<KeyType, ValueType> {
    * 
    * If your flatMap returns nothing, the key and value are dropped. This is how `pluck`
    * is implemented! 
-   * 
    * @param f 
    */
   flatMap<NewKeyType, NewValueType>(
@@ -143,7 +142,7 @@ export class KeyValues<KeyType, ValueType> {
         res["" + key] = value.toObject() as KeyValuesAsObject<ValueType>;
       } else if (value instanceof Collection) {
         res["" + key] = value.toArray() as KeyValuesAsObject<ValueType>;
-      } else if (typeof value == "string") {
+      } else if (typeof value == "string" || typeof value == "number" || value instanceof Array) {
         res["" + key] = value as KeyValuesAsObject<ValueType>;
       } else {
         res["" + key] = this._toObject(value) as KeyValuesAsObject<ValueType>;
@@ -158,26 +157,8 @@ export class KeyValues<KeyType, ValueType> {
    */
   values(): Collection<ValueType> {
     return this.data.map((e) => {
-      const [key, value] = e;
-
-      return value;
+      return e[1];
     });
-  }
-
-  private groupAllDataToMap<U>(f: (e: ValueType) => U): Map<U, ValueType[]> {
-    let r = new Map<U, ValueType[]>();
-
-    this.data.toArray().forEach((v) => {
-      const [key, value] = v;
-      const newKey = f(value);
-      if (r.has(newKey)) {
-        r.get(newKey)!.push(value);
-      } else {
-        r.set(newKey, [value]);
-      }
-    });
-
-    return r;
   }
 
   private _toObject<T>(k: T): { [i in keyof T]: T[i] } {
@@ -189,38 +170,6 @@ export class KeyValues<KeyType, ValueType> {
 
     return res as { [i in keyof T]: T[i] };
   }
-
-
-  // static fromMapOfArray<T, U>(o: Map<T, U[]>): KeyValues<T, Collection<U>> {
-  //   let entries = o.entries();
-  //   let generator = (function* gen() {
-  //     let v = entries.next();
-
-  //     while (!v.done) {
-  //       let [key, value] = v.value;
-  //       let res: [T, Collection<U>] = [key, Collection.of(value)];
-  //       yield res;
-  //       v = entries.next();
-  //     }
-  //   })();
-
-  //   return new KeyValues(new Collection(generator));
-  // }
-
-  // static fromMap<T, U>(o: Map<T, U>): KeyValues<T, U> {
-  //   let entries = o.entries();
-  //   return new KeyValues(
-  //     new Collection(
-  //       (function* gen() {
-  //         let v = entries.next();
-  //         while (!v.done) {
-  //           yield v.value;
-  //           v = entries.next();
-  //         }
-  //       })()
-  //     )
-  //   );
-  // }
 }
 
 function sequentialIndexer() {

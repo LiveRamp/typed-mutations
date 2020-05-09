@@ -1,5 +1,3 @@
-import { KeyValues } from "./keyValues";
-
 export interface Collection<T> {
   toArray(): T[];
   map<U>(f: (e: T) => U): Collection<U>;
