@@ -2,6 +2,10 @@ FROM node:13.2
 
 WORKDIR /app
 
-COPY . . 
+COPY src src
+COPY test test
+COPY package.json package.json 
+COPY tsconfig.json tsconfig.json
 
-RUN yarn build 
+RUN yarn
+RUN yarn build
