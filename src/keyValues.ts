@@ -43,10 +43,10 @@ export class KeyValues<KeyType, ValueType> {
     );
   }
 
-  static fromArray<T>(o: T[]): KeyValues<Number, T> {
+  static fromArray<T>(o: T[]): KeyValues<number, T> {
     let indexer = sequentialIndexer();
     return new KeyValues(
-      Collection.of(o).map<[Number, T]>((e: T) => [indexer(), e])
+      Collection.of(o).map<[number, T]>((e: T) => [indexer(), e])
     );
   }
   /**
@@ -117,7 +117,7 @@ export class KeyValues<KeyType, ValueType> {
     let seen = new Map<U, boolean>();
 
     return this.flatMap((t: [KeyType, ValueType]) => {
-      const [key, value] = t;
+      const value = t[1];
       const newKey = f(value);
       if (!unsafe) {
         if (seen.has(newKey))
@@ -175,5 +175,5 @@ export class KeyValues<KeyType, ValueType> {
 function sequentialIndexer() {
   let i = 0;
 
-  return () => Number(i++);
+  return () => i++;
 }
