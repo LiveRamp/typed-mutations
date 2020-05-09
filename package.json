@@ -6,7 +6,7 @@
     "start": "yarn ts-node-dev -r tsconfig-paths/register --ignore-watch node_modules src/index.ts",
     "build": "yarn tsc",
     "server": "ts-node -r tsconfig-paths/register dist/index.js",
-    "test:unit": "NODE_ENV=test yarn jest test/unit -c jest.config.unit.js"
+    "test:unit": "NODE_ENV=test yarn jest test -c jest.config.unit.js"
   },
   "dependencies": {
     "@types/mysql": "^2.15.10",

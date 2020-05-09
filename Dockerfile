@@ -2,6 +2,6 @@ FROM node:13.2
 
 WORKDIR /app
 
-COPY src src 
+COPY . . 
 
 RUN yarn build 
