@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run --rm -t -e CI=true -v `pwd`:/app --entrypoint=/bin/bash $IMAGE_TAG -c "yarn install; yarn test:unit; mv test-report.xml coverage/"

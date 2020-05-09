@@ -1,0 +1,31 @@
+#!/bin/bash
+BASE_ARGS=" \
+-Dsonar.login=${SONAR_TOKEN} \
+-Dsonar.projectBaseDir=/app/ \
+-Dsonar.userHome=/app/.sonar \
+"
+
+PR_ARGS=" \
+-Dsonar.pullrequest.key=${CHANGE_ID} \
+-Dsonar.pullrequest.branch=${CHANGE_BRANCH} \
+-Dsonar.pullrequest.base=${CHANGE_TARGET} \
+-Dsonar.pullrequest.provider=GitHub \
+"
+
+# Fetch master branch for comparison
+git fetch --no-tags ${GIT_URL} +refs/heads/master:refs/remotes/origin/master
+
+if [ -z "$CHANGE_ID" ]
+then
+  echo "SonarCloud Analysis running in branch mode..."
+  ARGS="$BASE_ARGS"
+else
+  echo "SonarCloud Analysis running in PR mode..."
+  ARGS="$BASE_ARGS $PR_ARGS"
+fi
+
+# Run the SonarCloud analysis inside of docker
+docker run \
+  --user="0:0" \
+  -v "$(pwd):/app" \
+  gcr.io/liveramp-eng/sonar-scanner-cli:4 ${ARGS}

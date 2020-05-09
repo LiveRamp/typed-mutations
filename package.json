@@ -1,0 +1,30 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "yarn ts-node-dev -r tsconfig-paths/register --ignore-watch node_modules src/index.ts",
+    "build": "yarn tsc",
+    "server": "ts-node -r tsconfig-paths/register dist/index.js",
+    "test:unit": "NODE_ENV=test yarn jest test -c jest.config.unit.js"
+  },
+  "dependencies": {
+    "@types/mysql": "^2.15.10",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/jest": "^25.2.1",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "jest": "^26.0.1",
+    "jest-sonar-reporter": "^2.0.0",
+    "ts-jest": "^25.2.0",
+    "ts-node": "^8.6.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "tsc": "^1.20150623.0",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.8.3"
+  }
+}
