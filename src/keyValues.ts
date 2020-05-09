@@ -1,25 +1,99 @@
 import { Collection } from "./collection";
-type HomogenousObject<T, U> = { [index in keyof T]: U };
+
 /**
- * This type exists to determine the object structure for a given KeyValues.
+ * This type exists to determine the object structure for a given KeyValues. The point here is to have no type be 
+ * Collection or KeyValues in this new type. 
  *
  * It powers .toObject(), allowing the compiler to still verify things are shaped
  * correctly.
  */
 type KeyValuesAsObject<T> = T extends KeyValues<infer U, infer V>
-  ? { [i: string]: KeyValuesAsObject<V> }
+  ? { [i: string]: KeyValuesAsObject<V> } // If T is a KeyValues, recurse
   : T extends string
-  ? T
+  ? string                                // If T extends a string, it's a string (else string can be inferred as a collection of characters) 
   : T extends Collection<infer U>
-  ? U[]
-  : T;
+  ? U[]                                   // If it's a collection, make it an array! 
+  : T;                                    // Else, shrug and retain its type. 
 
+/**
+ * KeyValues is intended to be used to perform typed mutations on objects. Typical usage is: 
+ * KeyValues.fromObject($yourObject)
+ * [ operations on it ]
+ * ...
+ * .toObject()
+ * 
+ * The final toObject call returns a typed object conforming to the mutations. 
+ */
 export class KeyValues<KeyType, ValueType> {
   private data: Collection<[KeyType, ValueType]>;
   constructor(data: Collection<[KeyType, ValueType]>) {
     this.data = data;
   }
 
+  static fromObject<T>(
+    o: T
+  ): KeyValues<string, T[keyof T]> {
+    return new KeyValues(
+      Collection.of(
+        Object.keys(o).map((key: string): [string, T[keyof T]] => [
+          key,
+          o[key as keyof T]! as T[keyof T],
+        ])
+      )
+    );
+  }
+
+  static fromArray<T>(o: T[]): KeyValues<Number, T> {
+    let indexer = sequentialIndexer();
+    return new KeyValues(
+      Collection.of(o).map<[Number, T]>((e: T) => [indexer(), e])
+    );
+  }
+  /**
+   * Perform operations on ValueType, potentially changing ValueType in the process. 
+   * 
+   * e.g. if ValueType was number, 
+   *         if f was (n: number) => n + 1, this would increment every value, ValueType would remain `number`.
+   *         if f was (n: number) => `Number ${number}`, ValueType would be string.
+   *         if f was (n: number) => if(n < 10) { return "Cat" } else { return 20 }, ValueType would be `string | number`.
+   *       
+   * @param f Function to convert ValueType into NewValueType
+   */
+  map<NewValueType>(
+    f: (t: ValueType) => NewValueType
+  ): KeyValues<KeyType, NewValueType> {
+    const tf = (a: [KeyType, ValueType]): [KeyType, NewValueType] => {
+      const [key, value] = a;
+
+      return [key, f(value)];
+    };
+
+    return this.flatMap(tf);
+  }
+
+  /**
+   * Similar to Map, except this operates on both the key and value.
+   * 
+   * E.g., if KeyValues represented:
+   * {
+   *      "potato": 20, 
+   *      "ham": 21
+   * }
+   * 
+   * .flatMap(
+   *    (e: [KeyType, ValueType]) => ["cat" + e[0], e[1] + 20])
+   * 
+   * would yield 
+   * {
+   *   "catpotato": 40,
+   *   "catham": 41 
+   * }
+   * 
+   * If your flatMap returns nothing, the key and value are dropped. This is how `pluck`
+   * is implemented! 
+   * 
+   * @param f 
+   */
   flatMap<NewKeyType, NewValueType>(
     f: (t: [KeyType, ValueType]) => [NewKeyType, NewValueType] | undefined
   ): KeyValues<NewKeyType, NewValueType> {
@@ -36,20 +110,7 @@ export class KeyValues<KeyType, ValueType> {
     );
   }
 
-  map<NewValueType>(
-    f: (t: ValueType) => NewValueType
-  ): KeyValues<KeyType, NewValueType> {
-    const tf = (a: [KeyType, ValueType]): [KeyType, NewValueType] => {
-      const [key, value] = a;
-
-      return [key, f(value)];
-    };
-
-    return this.flatMap(tf);
-  }
-
   /**
-   *
    * @param f Function that yields "primary key" for object
    * @param unsafe [default: false] Opt out of exception throwing if uniqueness violated
    */
@@ -70,28 +131,9 @@ export class KeyValues<KeyType, ValueType> {
   }
 
   /**
-   * For now, it reads the whole collection to group it.
-   *
-   * This seems necessary, but it might be possible to do more lazily. Asyncgenerator.
-   * @param f
+   * Returns the typed object corresponding to this KeyValues instance. 
+   * 
    */
-  groupBy<U>(
-    f: (e: ValueType) => U
-  ): KeyValues<KeyType, KeyValues<U, Collection<ValueType>>> {
-    const r = this.groupAllDataToMap(f);
-
-    return this.flatMap((k) => {
-      const [key, value] = k;
-      const groupValue = f(value);
-      const newRecord: [U, Collection<ValueType>] = [
-        groupValue,
-        Collection.of(r.get(groupValue)!),
-      ];
-
-      return [key, new KeyValues(Collection.of([newRecord]))];
-    });
-  }
-
   toObject(): { [i: string]: KeyValuesAsObject<ValueType> } {
     let res: { [i: string]: KeyValuesAsObject<ValueType> } = {};
 
@@ -111,6 +153,9 @@ export class KeyValues<KeyType, ValueType> {
     return res;
   }
 
+  /**
+   * Returns all the values of this object as a typed collection. 
+   */
   values(): Collection<ValueType> {
     return this.data.map((e) => {
       const [key, value] = e;
@@ -145,55 +190,37 @@ export class KeyValues<KeyType, ValueType> {
     return res as { [i in keyof T]: T[i] };
   }
 
-  static fromHomogenousObject<T extends HomogenousObject<T, T[keyof T]>>(
-    o: T
-  ): KeyValues<String, Exclude<T[keyof T], undefined>> {
-    return new KeyValues(
-      Collection.of(
-        Object.keys(o).map((key: string): [String, T[keyof T]] => [
-          key,
-          o[key as keyof T]! as T[keyof T],
-        ])
-      )
-    );
-  }
 
-  static fromArray<T>(o: T[]): KeyValues<Number, T> {
-    let indexer = sequentialIndexer();
-    return new KeyValues(
-      Collection.of(o).map<[Number, T]>((e: T) => [indexer(), e])
-    );
-  }
-  static fromMapOfArray<T, U>(o: Map<T, U[]>): KeyValues<T, Collection<U>> {
-    let entries = o.entries();
-    let generator = (function* gen() {
-      let v = entries.next();
+  // static fromMapOfArray<T, U>(o: Map<T, U[]>): KeyValues<T, Collection<U>> {
+  //   let entries = o.entries();
+  //   let generator = (function* gen() {
+  //     let v = entries.next();
 
-      while (!v.done) {
-        let [key, value] = v.value;
-        let res: [T, Collection<U>] = [key, Collection.of(value)];
-        yield res;
-        v = entries.next();
-      }
-    })();
+  //     while (!v.done) {
+  //       let [key, value] = v.value;
+  //       let res: [T, Collection<U>] = [key, Collection.of(value)];
+  //       yield res;
+  //       v = entries.next();
+  //     }
+  //   })();
 
-    return new KeyValues(new Collection(generator));
-  }
+  //   return new KeyValues(new Collection(generator));
+  // }
 
-  static fromMap<T, U>(o: Map<T, U>): KeyValues<T, U> {
-    let entries = o.entries();
-    return new KeyValues(
-      new Collection(
-        (function* gen() {
-          let v = entries.next();
-          while (!v.done) {
-            yield v.value;
-            v = entries.next();
-          }
-        })()
-      )
-    );
-  }
+  // static fromMap<T, U>(o: Map<T, U>): KeyValues<T, U> {
+  //   let entries = o.entries();
+  //   return new KeyValues(
+  //     new Collection(
+  //       (function* gen() {
+  //         let v = entries.next();
+  //         while (!v.done) {
+  //           yield v.value;
+  //           v = entries.next();
+  //         }
+  //       })()
+  //     )
+  //   );
+  // }
 }
 
 function sequentialIndexer() {

@@ -29,6 +29,11 @@ pipeline {
   agent any
 
   stages {
+    stage('Build image') {
+      steps {
+        sh 'docker build . -t $IMAGE_TAG'
+      }
+    }
     stage('Execute tests') {
       steps {
         sh 'bin/jenkins/run-tests'

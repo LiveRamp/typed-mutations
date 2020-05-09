@@ -1,5 +1,4 @@
 import { KeyValues } from "./keyValues";
-import { stub } from "./util";
 
 export interface Collection<T> {
   toArray(): T[];
@@ -24,6 +23,8 @@ export class Collection<T> implements Collection<T> {
       })()
     );
   }
+
+  static fromArray<T>(arr: T[]): Collection<T> { return Collection.of(arr) }
 
   toArray(): T[] {
     let result: T[] = [];
@@ -61,18 +62,5 @@ export class Collection<T> implements Collection<T> {
         return [];
       }
     });
-  }
-
-  groupBy<U>(f: (e: T) => U): KeyValues<U, Collection<T>> {
-    const map = new Map<U, T[]>();
-    this.toArray().forEach((v) => {
-      const newKey = f(v);
-      if (map.has(newKey)) map.get(newKey)!.push(v);
-      else {
-        map.set(newKey, [v]);
-      }
-    });
-
-    return KeyValues.fromMapOfArray(map);
   }
 }
