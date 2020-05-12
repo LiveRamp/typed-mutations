@@ -1,8 +1,6 @@
+import { KeyValues } from "../src"
+import { Collection } from "../src"
 
-
-import { KeyValues } from "../src/keyValues"
-import { Collection } from "../src/collection"
-import { CollectionAlreadyDrainedError } from "../src/errors"
 
 describe("KeyValues", () => {
   describe("constructors", () => {
