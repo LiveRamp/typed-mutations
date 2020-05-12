@@ -1,7 +1,12 @@
 {
   "name": "api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "UNLICENSED",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "scripts": {
     "start": "yarn ts-node-dev -r tsconfig-paths/register --ignore-watch node_modules src/index.ts",
     "build": "yarn tsc",
@@ -26,5 +31,6 @@
     "tsc": "^1.20150623.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.8.3"
-  }
+  },
+  "prepublish": "tsc"
 }
