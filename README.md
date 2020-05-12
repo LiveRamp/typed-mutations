@@ -1,4 +1,5 @@
 # ts-mutations
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=LiveRamp_ts-mutations&metric=coverage&token=50fd11bd0e319d169c0c3d49c87cb6f17d32ee41)](https://sonarcloud.io/dashboard?id=LiveRamp_ts-mutations)
 
 The intent of this package is to provide a simple way to transform objects while maintaining their type information. As a bonus, 
 it also optimizes such that writing readable code doesn't mean doing multiple loops over the same object - all changes are done 
