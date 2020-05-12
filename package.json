@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@liveramp/ts-mutations",
   "version": "0.0.2",
   "license": "UNLICENSED",
   "main": "dist/index.js",
