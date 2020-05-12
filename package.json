@@ -1,11 +1,15 @@
 {
   "name": "@liveramp/ts-mutations",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiveRamp/ts-mutations.git"
   },
   "scripts": {
     "start": "yarn ts-node-dev -r tsconfig-paths/register --ignore-watch node_modules src/index.ts",
