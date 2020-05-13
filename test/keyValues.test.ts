@@ -124,6 +124,26 @@ describe("KeyValues", () => {
         ]
       })
     })
+
+    it("can differentiate values based on the key being used", () => {
+      let obj = {
+        catCount: 1,
+        cats: [
+          { name: "Fluffy" }
+        ]
+      }
+
+      let result = KeyValues.fromObject(obj).flatMap((e) => {
+        if (e[0] == "cats") {
+          // TS knows e[1]'s type for sure now, so we can index to name! 
+          return ["name", e[1][0].name]
+        }
+      }).toObject();
+
+      expect(result).toEqual({
+        name: "Fluffy"
+      })
+    })
   })
   describe("keyedBy", () => {
     it("Works for a function that returns a unique value for each value", () => {
@@ -182,6 +202,22 @@ describe("KeyValues", () => {
           types: [3, 4, 5]
         }
       })
+    })
+  })
+
+  it("can pluck keys from source object and be smart about types", () => {
+    let result = KeyValues.fromObject({
+      "cats": 200,
+      "dogs": 300,
+      catNames: ["Fluffy", "Flopsy"],
+      dogNames: ["Rex", "Rufus"]
+    }).pluck(["cats", "dogs"])
+      .map((e: number) => e) // Note that e is typed as number here and that is fine! 
+      .toObject()
+
+    expect(result).toEqual({
+      cats: 200,
+      dogs: 300
     })
   })
 
