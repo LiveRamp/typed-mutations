@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "declaration": true
   },
-  "exclude": ["node_modules", "test"],
+  "exclude": ["dist", "node_modules", "test"],
   "types": ["request", "jest"],
 }

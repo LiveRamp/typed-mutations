@@ -10,6 +10,10 @@ For examples of usage, check out the [tests](test)
 
 For further explanation of behavior, check out the comments in [src](src)
 
-## Package
+## Installation
 
-We have not published a package yet, as we are in the process of setting up an organization on NPM.
+This package is distributed via NPM:
+
+```
+npm install @liveramp/typed-mutations
+```

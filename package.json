@@ -1,6 +1,6 @@
 {
-  "name": "typed-mutations",
-  "version": "1.0.0",
+  "name": "@liveramp/typed-mutations",
+  "version": "1.0.2",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
