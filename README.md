@@ -12,8 +12,12 @@ For further explanation of behavior, check out the comments in [src](src)
 
 ## Installation
 
-This package is distributed via NPM:
+If you'd like to fiddle around with it, try it out on [RunKit](https://runkit.com/npm/%40liveramp%2Ftyped-mutations)!
+
+This [package](https://www.npmjs.com/package/@liveramp/typed-mutations) is distributed using NPM. To use in your project:
 
 ```
 npm install @liveramp/typed-mutations
 ```
+
+
