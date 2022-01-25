@@ -18,7 +18,7 @@
     "test:unit": "NODE_ENV=test yarn jest test -c jest.config.unit.js"
   },
   "dependencies": {
-    "@types/mysql": "^2.15.10",
+    "@types/mysql": "^2.15.20",
     "express": "^4.17.1",
     "mysql": "^2.18.1"
   },

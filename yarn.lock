@@ -615,10 +615,10 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
   integrity sha512-FwI9gX75FgVBJ7ywgnq/P7tw+/o1GUbtP0KzbtusLigAOgIgNISRK0ZPl4qertvXSIE8YbsVJueQ90cDt9YYyw==
 
-"@types/mysql@^2.15.10":
-  version "2.15.10"
-  resolved "https://registry.yarnpkg.com/@types/mysql/-/mysql-2.15.10.tgz#225e99e16f6ed3e00091e7cd8821c9fa3cb38149"
-  integrity sha512-mx8HnU+ob01hT3f4GDW8NSoUqID1CgRfiPh/CgeDgdwvG0DsQtZsPdOXH9LHos/pKv2qkZAA4/ospo0+QoOfUQ==
+"@types/mysql@^2.15.20":
+  version "2.15.20"
+  resolved "https://registry.yarnpkg.com/@types/mysql/-/mysql-2.15.20.tgz#9b4a3e11391bee82dc96659405d899228c157d19"
+  integrity sha512-QyOqSRhe540jmdg3AqiS8AbCDvSwDgxAJcsBkMqDQw0y87OQla7y8RFW/MYcUUHBFi1AZrRYkjzSAL/bfCKMuQ==
   dependencies:
     "@types/node" "*"
 
