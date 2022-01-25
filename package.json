@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@types/mysql": "^2.15.10",
-    "express": "^4.17.1",
+    "express": "^4.17.2",
     "mysql": "^2.18.1"
   },
   "devDependencies": {
